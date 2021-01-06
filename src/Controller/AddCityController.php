@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\City;
-use App\Entity\Country;
 use App\Repository\CityRepository;
 use App\Repository\CountryRepository;
 use App\Service\CityFromRawData;
@@ -49,14 +48,17 @@ class AddCityController extends AbstractController
 
     $city = new City();
     $city->setName($contents['name']);
-    $country = $this->countryRepository->find(2);
+//    $country = $this->countryRepository->find(2);
+//
+//    if (!$country) {
+//      new JsonResponse('No country',Response::HTTP_NOT_FOUND);
+//    }
 
-    if (!$country) {
-      new JsonResponse('No country',Response::HTTP_NOT_FOUND);
-    }
+//    $city->setCountry($country);
 
-    $city->setCountry($country);
-
+    $form = $this->createForm(City::class, null, ['csrf_protection' => false]);
+    $form->submit($contents, true);
+    $this->createForm(CityFromRawData::class);
     $cityForm = $this->cityFromRawData->createByFormData($city);
     $cityForm->submit($contents, true);
 

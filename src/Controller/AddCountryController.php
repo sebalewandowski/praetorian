@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\City;
 use App\Entity\Country;
 use App\Repository\CountryRepository;
+use App\Service\CountryFromRawData;
 use App\Validator\FormValidator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -14,62 +16,52 @@ use OpenApi\Annotations as OA;
 
 class AddCountryController extends AbstractController
 {
-  /**
-   * @var CountryRepository
-   */
-  private $countryRepository;
 
-  public function __construct(CountryRepository $countryRepository)
+  /**
+   * @var CountryFromRawData
+   */
+  private $countryFromRawData;
+
+  public function __construct(CountryFromRawData $countryFromRawData)
   {
-    $this->countryRepository = $countryRepository;
+    $this->countryFromRawData = $countryFromRawData;
   }
 
   /**
    * @Route("/country", name="add_country", methods={"POST"})
    * @param Request $request
    * @return Response
-   * @OA\Post(
-   *     path="/country",
-   *     summary="Returns most accurate search result object",
-   *     description="Search for an object, if found return it!",
-   *     @OA\RequestBody(
-   *         description="Client side search object",
-   *         required=true,
-   *         @OA\MediaType(
-   *             mediaType="application/json"
-   *         )
-   *     ),
-   *     @OA\Response(
-   *         response=200,
-   *         description="Success"
-   *     ),
-   *     @OA\Response(
-   *         response=404,
-   *         description="Could Not Find Resource"
-   *     )
+   *
+   * @OA\Response(
+   *     response=200,
+   *     description="Returns the rewards of an user"
    * )
    */
     public function addCountry(Request $request): Response
     {
+      $entityManager = $this->getDoctrine()->getManager();
       $contents = json_decode($request->getContent(),1);
 
       $country = new Country();
-      $country->setName($contents['name']);
 
-      $form = $this->createCountryForm($country);
-      $form->submit($contents, true);
+//      $form = $this->createForm(CountryFormType::class, $country);
+//      $form->submit($contents);
+//
+//      if (!$form->isSubmitted()) {
+//        return new JsonResponse('Form not submitted', Response::HTTP_NOT_FOUND);
+//      }
+//
+//      if (!$form->isValid()) {
+//        $fields = FormValidator::getErrorsFromForm($form);
+//        return new JsonResponse('Form not submitted', Response::HTTP_NOT_FOUND);
+//      }
+//
+//      $entityManager->persist($form->getNormData());
+//      $entityManager->flush();
 
-      if (!$form->isValid()) {
-        $fields = FormValidator::getErrorsFromForm($form);
+      if ($this->countryFromRawData->createCountryFromRawData()) {
+
       }
-
-      $this->countryRepository->save($country);
-
-      return new JsonResponse($country->getId(), Response::HTTP_OK);
-    }
-
-    private function createCountryForm(Country $country)
-    {
-      return $this->createForm(CountryFormType::class, $country);
+      return new JsonResponse('sds', Response::HTTP_OK);
     }
 }
