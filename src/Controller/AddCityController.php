@@ -48,14 +48,13 @@ class AddCityController extends AbstractController
     $contents = json_decode($request->getContent(),1);
 
     $city = new City();
-    $city->setName('Piano1');
+    $city->setName($contents['name']);
+    $country = $this->countryRepository->find(2);
 
-    // for further needs if we need to find id of existing country and just add cities into
-//    $this->countryRepository->find($id);
+    if (!$country) {
+      new JsonResponse('No country',Response::HTTP_NOT_FOUND);
+    }
 
-    $country = new Country();
-
-    $country->setName('asd3');
     $city->setCountry($country);
 
     $cityForm = $this->cityFromRawData->createByFormData($city);
@@ -65,8 +64,8 @@ class AddCityController extends AbstractController
       $fields = FormValidator::getErrorsFromForm($cityForm);
     }
 
-    $this->cityRepository->save($city, $country);
+    $this->cityRepository->save($city);
 
-    return new JsonResponse('Great',Response::HTTP_OK);
+    return new JsonResponse($city->getId(),Response::HTTP_OK);
   }
 }

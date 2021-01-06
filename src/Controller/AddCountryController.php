@@ -65,7 +65,7 @@ class AddCountryController extends AbstractController
 
       $this->countryRepository->save($country);
 
-      return new JsonResponse([$country->getId()], Response::HTTP_OK);
+      return new JsonResponse($country->getId(), Response::HTTP_OK);
     }
 
     private function createCountryForm(Country $country)

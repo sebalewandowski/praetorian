@@ -20,10 +20,10 @@ class CityRepository extends ServiceEntityRepository
         parent::__construct($registry, City::class);
     }
 
-    public function save(City $city, Country $country): void
+    public function save(City $city): void
     {
     $this->_em->persist($city);
-    $this->_em->persist($country);
+
 
     $this->_em->flush();
     }

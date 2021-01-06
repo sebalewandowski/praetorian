@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\City;
+use App\Entity\Country;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,8 +14,8 @@ class CityFormType extends AbstractController
 
   public function index(Request $request, FormBuilderInterface $builder): Response
   {
-    $builder->add('city', EntityType::class, [
-      'class' => City::class,
-    ])->getForm();
+    $builder->add('country', EntityType::class, [
+      'class' => Country::class,
+    ]);
   }
 }
