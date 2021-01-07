@@ -22,7 +22,6 @@ class CountryRepository extends ServiceEntityRepository
   public function save(Country $country): void
   {
     $this->_em->persist($country);
-
     $this->_em->flush();
   }
 }
