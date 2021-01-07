@@ -22,7 +22,6 @@ class CityRepository extends ServiceEntityRepository
     public function save(City $city): void
     {
       $this->_em->persist($city);
-
       $this->_em->flush();
     }
 }
