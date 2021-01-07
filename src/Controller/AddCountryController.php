@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use OpenApi\Annotations as OA;
+use Nelmio\ApiDocBundle\Annotation\Model;
 
 class AddCountryController extends AbstractController
 {
@@ -28,40 +29,38 @@ class AddCountryController extends AbstractController
   }
 
   /**
-   * @Route("/country", name="add_country", methods={"POST"})
+   * @Route("api/country", name="add_country", methods={"POST"})
    * @param Request $request
    * @return Response
    *
-   * @OA\Response(
-   *     response=200,
-   *     description="Returns the rewards of an user"
+   * @OA\Post(
+   *     path="/api/country",
+   *     operationId="add_country",
+   *     description="Creates a new country in the db.",
+   *     @OA\RequestBody(
+   *         description="Country to add",
+   *         required=true,
+   *         @OA\MediaType(
+   *             mediaType="application/json",
+   *         )
+   *     ),
+   *     @OA\Response(
+   *         response=200,
+   *         description="country response",
+
+   *     ),
+   *     @OA\Response(
+   *         response="default",
+   *         description="unexpected error",
+
+   *     )
    * )
+   *
    */
     public function addCountry(Request $request): Response
     {
-      $entityManager = $this->getDoctrine()->getManager();
-      $contents = json_decode($request->getContent(),1);
+      $response = $this->countryFromRawData->createCountryFromRawData($request);
 
-      $country = new Country();
-
-//      $form = $this->createForm(CountryFormType::class, $country);
-//      $form->submit($contents);
-//
-//      if (!$form->isSubmitted()) {
-//        return new JsonResponse('Form not submitted', Response::HTTP_NOT_FOUND);
-//      }
-//
-//      if (!$form->isValid()) {
-//        $fields = FormValidator::getErrorsFromForm($form);
-//        return new JsonResponse('Form not submitted', Response::HTTP_NOT_FOUND);
-//      }
-//
-//      $entityManager->persist($form->getNormData());
-//      $entityManager->flush();
-
-      if ($this->countryFromRawData->createCountryFromRawData()) {
-
-      }
-      return new JsonResponse('sds', Response::HTTP_OK);
+      return new JsonResponse($response['message'], $response['code']);
     }
 }

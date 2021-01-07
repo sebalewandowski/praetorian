@@ -6,9 +6,19 @@ use App\Repository\CountryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use OpenApi\Annotations as OA;
+
 
 /**
  * @ORM\Entity(repositoryClass=CountryRepository::class)
+/**
+ * @OA\Schema(
+ *     schema="Country",
+ *     description="Country model",
+ *     title="Country model",
+ *     required={"name"},
+ * )
  */
 class Country
 {
@@ -16,11 +26,13 @@ class Country
    * @ORM\Id
    * @ORM\GeneratedValue
    * @ORM\Column(type="integer")
+   * @OA\Property(description="The unique identifier of the country.")
    */
   private $id;
 
   /**
    * @ORM\Column(type="string", length=255)
+   * @OA\Property(type="string", maxLength=255)
    */
   private $name;
 

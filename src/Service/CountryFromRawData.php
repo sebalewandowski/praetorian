@@ -3,48 +3,61 @@
 
 namespace App\Service;
 
-use App\Controller\CountryFormType;
-use App\Repository\CountryRepository;
+use App\Form\CountryFormType;
+use App\Entity\Country;
 use App\Validator\FormValidator;
-use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class CountryFromRawData extends AbstractController
 {
   /**
-   * @var CountryRepository
+   * @var EntityManagerInterface
    */
-  private $countryRepository;
+  private $em;
 
-  public function __construct(CountryRepository $countryRepository)
+  public function __construct(EntityManagerInterface $em)
   {
-    $this->countryRepository = $countryRepository;
+    $this->em = $em;
   }
 
-  public function createCountryFromRawData()
+  public function createCountryFromRawData(Request $request): array
   {
-    $errors = [];
-    $form = $this->createForm(CountryFormType::class, $country);
+    $response = [];
+    $contents = json_decode($request->getContent(),1);
+    $country = new Country();
+
+    $form = $this->createCountryForm($country);
     $form->submit($contents);
 
     if (!$form->isSubmitted()) {
-      $errors['message'] = 'Form not submitted';
-      $errors['code'] = Response::HTTP_NOT_FOUND;
-      return $errors;
+      $response['message'] = 'Form not submitted';
+      $response['code'] = Response::HTTP_NOT_FOUND;
+      return $response;
     }
 
     if (!$form->isValid()) {
       $fields = FormValidator::getErrorsFromForm($form);
-      $errors['message'] = $fields;
-      $errors['code'] = Response::HTTP_NOT_FOUND;
-      return $errors;
+      $response['message'] = $fields;
+      $response['code'] = Response::HTTP_NOT_FOUND;
+      return $response;
     }
 
-    $this->countryRepository->persist($form->getNormData());
-    $this->countryRepository->flush();
+    $this->em->persist($form->getNormData());
+    $this->em->flush();
 
-    return $errors;
+    $response = [
+      'message' => $country->getId(),
+      'code' => Response::HTTP_OK
+    ];
+
+    return $response;
+  }
+
+  private function createCountryForm(Country $country): \Symfony\Component\Form\FormInterface
+  {
+    return $this->createForm(CountryFormType::class, $country);
   }
 }
